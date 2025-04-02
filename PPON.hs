@@ -53,7 +53,7 @@ entreLlaves ds = texto "{" <+> indentar 2 (linea <+> intercalar (texto "," <+> l
 
 
 aplanar :: Doc -> Doc
-aplanar = foldDoc (vacio) (\s acc -> texto s <+> texto " " <+> acc) (\ _ acc -> acc)
+aplanar = foldDoc vacio (\s acc -> if acc == vacio then texto s else texto s <+> texto " " <+> acc) (\_ acc -> acc)
 
 
 pericles = ObjetoPP [("nombre", TextoPP "Pericles"), ("edad", IntPP 30)]
