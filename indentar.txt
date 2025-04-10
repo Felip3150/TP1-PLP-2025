@@ -1,74 +1,93 @@
-* ∀ k :: Int positivo. indentar k Vacio = Vacio
+========== LEMAS ==========
 
-indentar k Vacio = (indentar)
-foldDoc (Vacio) (\s acc -> Texto s acc) (\i2 acc -> Linea (i+i2) acc) = (foldDoc)
-Vacio
+1. ∀ k :: Int positivo. indentar k Vacio = Vacio
 
-
-* ∀ k :: Int positivo. indentar k (Texto s d) = Texto s (indentar k d)
-
-indentar k (Texto s d) = (indentar)
-foldDoc (Vacio) (\s' acc -> Texto s' acc) (\i2 acc -> Linea (k+i2) acc) (Texto s d) = (foldDoc)
-(\s' acc -> Texto s' acc) s (foldDoc (Vacio) (\s' acc -> Texto s' acc) (\i2 acc -> Linea (k+i2) acc)) d = (sintaxis)
-(\s' -> (\acc -> Texto s' acc)) s (foldDoc (Vacio) (\s' acc -> Texto s' acc) (\i2 acc -> Linea (k+i2) acc)) d = (beta)
-
-	// (foldDoc (Vacio) (\s' acc -> Texto s' acc) (\i2 acc -> Linea (k+i2) acc)) d == indentar k d
-
-(\acc -> Texto s acc) (indentar k d) = (beta)
-Texto s (indentar k d)
+	indentar k Vacio = {indentar}
+	foldDoc (Vacio) (\s acc -> Texto s acc) (\i2 acc -> Linea (i+i2) acc) = {foldDoc Vacio}
+	Vacio
 
 
-* ∀ m, k :: Int positivos. ∀ d :: Doc. indentar m (Linea k d) = Linea (m+k) (indentar m d)
+2. ∀ k :: Int positivo. indentar k (Texto s d) = Texto s (indentar k d)
 
-indentar m (Linea k d) = (indentar)
-foldDoc (Vacio) (\s acc -> Texto s acc) (\i2 acc -> Linea (m+i2) acc) (Linea k d) = (foldDoc)
-(\i2 acc -> Linea (m+i2) acc) k (foldDoc (Vacio) (\s acc -> Texto s acc) (\i2 acc -> Linea (m+i2) acc)) d = (sintaxis)
-(\i2 -> (\acc -> Linea (m+i2) acc)) k (foldDoc (Vacio) (\s acc -> Texto s acc) (\i2 acc -> Linea (m+i2) acc)) d = (beta)
+	indentar k (Texto s d) = {indentar}
+	foldDoc (Vacio) (\s' acc -> Texto s' acc) (\i2 acc -> Linea (k+i2) acc) (Texto s d) = {foldDoc Texto}
+	(\s' acc -> Texto s' acc) s (foldDoc (Vacio) (\s' acc -> Texto s' acc) (\i2 acc -> Linea (k+i2) acc)) d = {sintaxis}
+	(\s' -> (\acc -> Texto s' acc)) s (foldDoc (Vacio) (\s' acc -> Texto s' acc) (\i2 acc -> Linea (k+i2) acc)) d = {β}
 
-	// (foldDoc (Vacio) (\s acc -> Texto s acc) (\i2 acc -> Linea (m+i2) acc)) d == indentar m d
+		// (foldDoc (Vacio) (\s' acc -> Texto s' acc) (\i2 acc -> Linea (k+i2) acc)) d == indentar k d
 
-(\acc -> Linea (m+k) acc) (indentar m d) = (beta)
-Linea (m+k) (indentar m d)
+	(\acc -> Texto s acc) (indentar k d) = {β}
+	Texto s (indentar k d)
+
+
+3. ∀ m, k :: Int positivos. ∀ d :: Doc. indentar m (Linea k d) = Linea (m+k) (indentar m d)
+
+	indentar m (Linea k d) = {indentar}
+	foldDoc (Vacio) (\s acc -> Texto s acc) (\i2 acc -> Linea (m+i2) acc) (Linea k d) = {foldDoc Linea}
+	(\i2 acc -> Linea (m+i2) acc) k (foldDoc (Vacio) (\s acc -> Texto s acc) (\i2 acc -> Linea (m+i2) acc)) d = {sintaxis}
+	(\i2 -> (\acc -> Linea (m+i2) acc)) k (foldDoc (Vacio) (\s acc -> Texto s acc) (\i2 acc -> Linea (m+i2) acc)) d = {β}
+
+		// (foldDoc (Vacio) (\s acc -> Texto s acc) (\i2 acc -> Linea (m+i2) acc)) d == indentar m d
+
+	(\acc -> Linea (m+k) acc) (indentar m d) = {β}
+	Linea (m+k) (indentar m d)
 
 
 
-* ∀ n, m :: Int positivos. x :: Doc. indentar n (indentar m x) = indentar (n+m) x
+========== DEMOSTRACIÓN ==========
+
+∀ n, m :: Int positivos. x :: Doc. indentar n (indentar m x) = indentar (n+m) x
 
 P(l) : indentar n (indentar m l) = indentar (n+m) l
 
+
 CASO BASE: l = Vacio
 
-P(Vacio) : indentar n (indentar m Vacio) = indentar (n+m) Vacio
+	P(Vacio) : indentar n (indentar m Vacio) = indentar (n+m) Vacio
 
-indentar n (indentar m Vacio) = (lema)
-indentar n Vacio = (lema)
-Vacio
+	Lado izquierdo:
+	indentar n (indentar m Vacio) = {lema 1 aplicado a indentar m Vacio}
+	indentar n Vacio = {lema 1}
+	Vacio
 
-indentar (n+m) Vacio = (lema)
-Vacio
+	Lado derecho:
+	indentar (n+m) Vacio = {lema 1 (dado que (n+m) :: Nat positivo)}
+	Vacio
+
+-> Se cumple P(Vacio)
 
 
 CASO INDUCTIVO 1:
 
-P(d) => P(Texto s d)
+	P(d) => P(Texto s d)
+	P(Texto s d): indentar n (indentar m (Texto s d)) = indentar (n+m) (Texto s d)
 
-HI: indentar n (indentar m d) = indentar (n+m) d
+	HI: indentar n (indentar m d) = indentar (n+m) d
 
-indentar n (indentar m (Texto s d)) = (lema)
-indentar n (Texto s (indentar m d)) = (lema)
-Texto s (indentar n (indentar m d)) = (HI)
-Texto s (indentar (n+m) d) = (lema)
-indentar (n+m) (Texto s d)
+	indentar n (indentar m (Texto s d)) = {lema 2}
+	indentar n (Texto s (indentar m d)) = {lema 2}
+	Texto s (indentar n (indentar m d)) = {HI}
+	Texto s (indentar (n+m) d) = {lema 2}
+	indentar (n+m) (Texto s d)
+
+-> Se cumple P(d) => P(Texto s d)
 
 
 CASO INDUCTIVO 2:
 
-P(d) => P(Linea k d)
+	P(d) => P(Linea k d)
+	P(Linea k d): indentar n (indentar m (Linea k d)) = indentar (n+m) (Linea k d)
 
-HI: indentar n (indentar m d) = indentar (n+m) d
+	HI: indentar n (indentar m d) = indentar (n+m) d
 
-indentar n (indentar m (Linea k d)) = (lema)
-indentar n (Linea (m+k) (indentar m d)) = (lema)
-Linea (n + (m+k)) (indentar n (indentar m d)) = (HI)
-Linea (n + (m+k)) (indentar (n+m) d) = (lema)
-indentar (n+m) (Linea k d)
+	indentar n (indentar m (Linea k d)) = {lema 3}
+	indentar n (Linea (m+k) (indentar m d)) = {lema 3}
+	Linea (n + (m+k)) (indentar n (indentar m d)) = {HI}
+	Linea (n + (m+k)) (indentar (n+m) d) = {lema 3}
+	indentar (n+m) (Linea k d)
+
+-> Se cumple P(d) => P(Linea k d)
+
+
+Luego, Por inducción estructural sobre Doc, se cumple que:
+∀ n, m :: Int positivos. ∀ x :: Doc. indentar n (indentar m x) = indentar (n + m) x
