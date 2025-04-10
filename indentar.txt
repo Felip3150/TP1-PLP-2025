@@ -1,0 +1,74 @@
+* ∀ k :: Int positivo. indentar k Vacio = Vacio
+
+indentar k Vacio = (indentar)
+foldDoc (Vacio) (\s acc -> Texto s acc) (\i2 acc -> Linea (i+i2) acc) = (foldDoc)
+Vacio
+
+
+* ∀ k :: Int positivo. indentar k (Texto s d) = Texto s (indentar k d)
+
+indentar k (Texto s d) = (indentar)
+foldDoc (Vacio) (\s' acc -> Texto s' acc) (\i2 acc -> Linea (k+i2) acc) (Texto s d) = (foldDoc)
+(\s' acc -> Texto s' acc) s (foldDoc (Vacio) (\s' acc -> Texto s' acc) (\i2 acc -> Linea (k+i2) acc)) d = (sintaxis)
+(\s' -> (\acc -> Texto s' acc)) s (foldDoc (Vacio) (\s' acc -> Texto s' acc) (\i2 acc -> Linea (k+i2) acc)) d = (beta)
+
+	// (foldDoc (Vacio) (\s' acc -> Texto s' acc) (\i2 acc -> Linea (k+i2) acc)) d == indentar k d
+
+(\acc -> Texto s acc) (indentar k d) = (beta)
+Texto s (indentar k d)
+
+
+* ∀ m, k :: Int positivos. ∀ d :: Doc. indentar m (Linea k d) = Linea (m+k) (indentar m d)
+
+indentar m (Linea k d) = (indentar)
+foldDoc (Vacio) (\s acc -> Texto s acc) (\i2 acc -> Linea (m+i2) acc) (Linea k d) = (foldDoc)
+(\i2 acc -> Linea (m+i2) acc) k (foldDoc (Vacio) (\s acc -> Texto s acc) (\i2 acc -> Linea (m+i2) acc)) d = (sintaxis)
+(\i2 -> (\acc -> Linea (m+i2) acc)) k (foldDoc (Vacio) (\s acc -> Texto s acc) (\i2 acc -> Linea (m+i2) acc)) d = (beta)
+
+	// (foldDoc (Vacio) (\s acc -> Texto s acc) (\i2 acc -> Linea (m+i2) acc)) d == indentar m d
+
+(\acc -> Linea (m+k) acc) (indentar m d) = (beta)
+Linea (m+k) (indentar m d)
+
+
+
+* ∀ n, m :: Int positivos. x :: Doc. indentar n (indentar m x) = indentar (n+m) x
+
+P(l) : indentar n (indentar m l) = indentar (n+m) l
+
+CASO BASE: l = Vacio
+
+P(Vacio) : indentar n (indentar m Vacio) = indentar (n+m) Vacio
+
+indentar n (indentar m Vacio) = (lema)
+indentar n Vacio = (lema)
+Vacio
+
+indentar (n+m) Vacio = (lema)
+Vacio
+
+
+CASO INDUCTIVO 1:
+
+P(d) => P(Texto s d)
+
+HI: indentar n (indentar m d) = indentar (n+m) d
+
+indentar n (indentar m (Texto s d)) = (lema)
+indentar n (Texto s (indentar m d)) = (lema)
+Texto s (indentar n (indentar m d)) = (HI)
+Texto s (indentar (n+m) d) = (lema)
+indentar (n+m) (Texto s d)
+
+
+CASO INDUCTIVO 2:
+
+P(d) => P(Linea k d)
+
+HI: indentar n (indentar m d) = indentar (n+m) d
+
+indentar n (indentar m (Linea k d)) = (lema)
+indentar n (Linea (m+k) (indentar m d)) = (lema)
+Linea (n + (m+k)) (indentar n (indentar m d)) = (HI)
+Linea (n + (m+k)) (indentar (n+m) d) = (lema)
+indentar (n+m) (Linea k d)
