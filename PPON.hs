@@ -20,7 +20,7 @@ pponObjetoSimple p = case p of
 
 
 intercalar :: Doc -> [Doc] -> Doc
-intercalar d = foldr1 (\d1 acc -> d1 <+> d <+> acc)
+intercalar d1 = foldr (\x acc -> if acc == vacio then x else x <+> d1 <+> acc) vacio
 
 
 entreLlaves :: [Doc] -> Doc
