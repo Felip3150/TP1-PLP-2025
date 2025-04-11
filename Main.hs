@@ -35,7 +35,9 @@ testsEj3 =
     [ indentar 2 vacio ~?= vacio,
       indentar 2 (texto "a") ~?= texto "a",
       indentar 2 (texto "a" <+> linea <+> texto "b") ~?= texto "a" <+> indentar 2 (linea <+> texto "b"),
-      indentar 2 (linea <+> texto "a") ~?= indentar 1 (indentar 1 (linea <+> texto "a"))
+      indentar 2 (linea <+> texto "a") ~?= indentar 1 (indentar 1 (linea <+> texto "a")),
+      indentar 2 (indentar 2 (linea <+> texto "a")) ~?= indentar 4 (linea <+> texto "a"),
+      indentar 3 (texto "a" <+> indentar 1 (linea <+> texto "b")) ~?= texto "a" <+> indentar 4 (linea <+> texto "b")
     ]
 
 testsEj4 :: Test
