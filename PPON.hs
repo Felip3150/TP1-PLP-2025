@@ -5,22 +5,24 @@ import Documento
 data PPON = TextoPP String | IntPP Int | ObjetoPP [(String, PPON)]
   deriving (Eq, Show)
 
-
+--CORRECCION 4
 
 pponAtomico :: PPON -> Bool
 pponAtomico p = case p of
-  TextoPP s -> True
-  IntPP i -> True
-  otherwise -> False
+  TextoPP _ -> True
+  IntPP _ -> True
+  _ -> False
+
+--CORRECCION 5 
 
 pponObjetoSimple :: PPON -> Bool
-pponObjetoSimple p = case p of
-  ObjetoPP l -> foldr (\(a, b) acc -> (pponAtomico b) && acc) True l
-  otherwise -> False
+pponObjetoSimple (ObjetoPP l) = all (pponAtomico . snd) l
+pponObjetoSimple _ = False
 
-
+--CORRECCION 6
 intercalar :: Doc -> [Doc] -> Doc
-intercalar d1 = foldr (\x acc -> if acc == vacio then x else x <+> d1 <+> acc) vacio
+intercalar _ [] = vacio
+intercalar sep docs = foldr1 (\x acc -> x <+> sep <+> acc) docs
 
 
 entreLlaves :: [Doc] -> Doc
@@ -31,10 +33,19 @@ entreLlaves ds = texto "{" <+> indentar 2 (linea <+> intercalar (texto "," <+> l
 aplanar :: Doc -> Doc
 aplanar = foldDoc vacio (\s acc -> texto s <+> acc) (\_ acc -> texto " " <+> acc)
 
+--CORRECCION 7
 
+-- Recursión estructural 
 pponADoc :: PPON -> Doc
-pponADoc (TextoPP s) = texto (show s) 
+pponADoc (TextoPP s) = texto (show s)
 pponADoc (IntPP i) = texto (show i)
-pponADoc (ObjetoPP l) | pponObjetoSimple (ObjetoPP l) = aplanar (entreLlaves (fAux l))
-                      | otherwise = entreLlaves (fAux l)
-  where fAux = map (\(a,b) -> if pponObjetoSimple b then texto (show a ++ ": ") <+> aplanar (pponADoc b) else texto (show a ++ ": ") <+> (pponADoc b))
+pponADoc (ObjetoPP l) = resultado
+  where
+    docs = map parADoc l
+    docsConLlaves = entreLlaves docs
+
+    resultado = if pponObjetoSimple (ObjetoPP l) 
+                  then aplanar docsConLlaves 
+                  else docsConLlaves
+
+    parADoc (a, b) = texto (show a ++ ": ") <+> pponADoc b
