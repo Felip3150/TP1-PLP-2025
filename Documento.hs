@@ -90,7 +90,7 @@ indentar i = foldDoc Vacio Texto casoLinea
 
 --CORRECCION 3
 mostrar :: Doc -> String
-mostrar = foldDoc "" (++) (\i acc -> "\n" ++ replicate i ' ' ++ acc)
+mostrar = foldDoc "" (++) (\i recDoc -> "\n" ++ replicate i ' ' ++ recDoc)
 
 imprimir :: Doc -> IO ()
 imprimir d = putStrLn (mostrar d)

@@ -22,7 +22,7 @@ pponObjetoSimple _ = False
 --CORRECCION 6
 intercalar :: Doc -> [Doc] -> Doc
 intercalar _ [] = vacio
-intercalar sep docs = foldr1 (\x acc -> x <+> sep <+> acc) docs
+intercalar sep docs = foldr1 (\x recDoc -> x <+> sep <+> recDoc) docs
 
 
 entreLlaves :: [Doc] -> Doc
@@ -31,7 +31,7 @@ entreLlaves ds = texto "{" <+> indentar 2 (linea <+> intercalar (texto "," <+> l
 
 
 aplanar :: Doc -> Doc
-aplanar = foldDoc vacio (\s acc -> texto s <+> acc) (\_ acc -> texto " " <+> acc)
+aplanar = foldDoc vacio (\s recDoc -> texto s <+> recDoc) (\_ recDoc -> texto " " <+> recDoc)
 
 --CORRECCION 7
 
