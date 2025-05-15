@@ -86,7 +86,7 @@ d1 <+> d2 = foldDoc d2 casoTexto Linea d1
 indentar :: Int -> Doc -> Doc
 indentar i = foldDoc Vacio Texto casoLinea
   where 
-    casoLinea n = Linea (i+n) 
+    casoLinea n d = Linea (i+n) d 
 
 --CORRECCION 3
 mostrar :: Doc -> String

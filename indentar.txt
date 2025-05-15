@@ -1,38 +1,39 @@
 ========== LEMAS ==========
 
-1. ∀ k :: Int positivo. indentar k Vacio = Vacio
+1. ∀ k :: Int positivo. ∀ d :: Doc. indentar k Vacio = Vacio
 
-	indentar k Vacio = {indentar}
-	foldDoc (Vacio) (\s acc -> Texto s acc) (\i2 acc -> Linea (i+i2) acc) = {foldDoc Vacio}
-	Vacio
+	indentar k Vacio  
+	= {indentar} foldDoc Vacio Texto casoLinea Vacio
+				where	
+					casoLinea n d = Linea (k=n) d  
+	= {foldDoc Vacio} Vacio
 
-
-2. ∀ k :: Int positivo. indentar k (Texto s d) = Texto s (indentar k d)
+2. ∀ k :: Int positivo. ∀ s :: String. ∀ d :: Doc. indentar k (Texto s d) = Texto s (indentar k d)
 
 	indentar k (Texto s d) = {indentar}
-	foldDoc (Vacio) (\s' acc -> Texto s' acc) (\i2 acc -> Linea (k+i2) acc) (Texto s d) = {foldDoc Texto}
-	(\s' acc -> Texto s' acc) s (foldDoc (Vacio) (\s' acc -> Texto s' acc) (\i2 acc -> Linea (k+i2) acc)) d = {sintaxis}
-	(\s' -> (\acc -> Texto s' acc)) s (foldDoc (Vacio) (\s' acc -> Texto s' acc) (\i2 acc -> Linea (k+i2) acc)) d = {β}
+	foldDoc Vacio Texto casoLinea (Texto s d)
+			where	
+				casoLinea n d = Linea (k=n) d  
 
-		// (foldDoc (Vacio) (\s' acc -> Texto s' acc) (\i2 acc -> Linea (k+i2) acc)) d == indentar k d
-
-	(\acc -> Texto s acc) (indentar k d) = {β}
-	Texto s (indentar k d)
-
+	= {foldDoc Texto} Texto s (foldDoc Vacio Texto casoLinea d
+									where 
+    									casoLinea n d = Linea (i+n) d)
+									
+	= {indentar} Texto s (indentar k d)
 
 3. ∀ m, k :: Int positivos. ∀ d :: Doc. indentar m (Linea k d) = Linea (m+k) (indentar m d)
 
 	indentar m (Linea k d) = {indentar}
-	foldDoc (Vacio) (\s acc -> Texto s acc) (\i2 acc -> Linea (m+i2) acc) (Linea k d) = {foldDoc Linea}
-	(\i2 acc -> Linea (m+i2) acc) k (foldDoc (Vacio) (\s acc -> Texto s acc) (\i2 acc -> Linea (m+i2) acc)) d = {sintaxis}
-	(\i2 -> (\acc -> Linea (m+i2) acc)) k (foldDoc (Vacio) (\s acc -> Texto s acc) (\i2 acc -> Linea (m+i2) acc)) d = {β}
+	indentar m = foldDoc Vacio Texto casoLinea
+  					where 
+    					casoLinea n d = Linea (m+k) d 
 
-		// (foldDoc (Vacio) (\s acc -> Texto s acc) (\i2 acc -> Linea (m+i2) acc)) d == indentar m d
+	= {foldDoc indentar} Linea (m+k) (foldDoc Vacio Texto casoLinea
+  										where 
+    										casoLinea n' d = Linea (m + n') d)
 
-	(\acc -> Linea (m+k) acc) (indentar m d) = {β}
-	Linea (m+k) (indentar m d)
 
-
+	= {indentar} Linea (m+k) (indentar m d)
 
 ========== DEMOSTRACIÓN ==========
 
