@@ -61,7 +61,7 @@ CASO BASE: l = Vacio
 CASO INDUCTIVO 1:
 
 	P(d) => P(Texto s d)
-	P(Texto s d): indentar n (indentar m (Texto s d)) = indentar (n+m) (Texto s d)
+	P(Texto s d): ∀ s :: String. ∀ d:: Doc. indentar n (indentar m (Texto s d)) = indentar (n+m) (Texto s d)
 
 	HI: indentar n (indentar m d) = indentar (n+m) d
 
@@ -77,18 +77,20 @@ CASO INDUCTIVO 1:
 CASO INDUCTIVO 2:
 
 	P(d) => P(Linea k d)
-	P(Linea k d): indentar n (indentar m (Linea k d)) = indentar (n+m) (Linea k d)
+	P(Linea k d): ∀ k :: Int positivo. ∀ d :: Doc. indentar n (indentar m (Linea k d)) = indentar (n+m) (Linea k d)
 
 	HI: indentar n (indentar m d) = indentar (n+m) d
 
 	indentar n (indentar m (Linea k d)) = {lema 3}
 	indentar n (Linea (m+k) (indentar m d)) = {lema 3}
 	Linea (n + (m+k)) (indentar n (indentar m d)) = {HI}
-	Linea (n + (m+k)) (indentar (n+m) d) = {lema 3}
+	Linea (n + (m+k)) (indentar (n+m) d) = {Int}
+	Linea ((n+m)+k) (indentar (n+m) d) = {lema 3}
 	indentar (n+m) (Linea k d)
 
 -> Se cumple P(d) => P(Linea k d)
 
+indentar m (Linea k d) = Linea (m+k) (indentar m d)
 
 Luego, Por inducción estructural sobre Doc, se cumple que:
 ∀ n, m :: Int positivos. ∀ x :: Doc. indentar n (indentar m x) = indentar (n + m) x
