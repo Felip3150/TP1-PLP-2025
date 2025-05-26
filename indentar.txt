@@ -55,7 +55,7 @@ Caso x = Vacio
 
 Caso x = Texto s d
 Asumo por {HI} que vale P(d), quiero probar que P(Texto s d) vale
-P(d): indentar n (indentar m d) = indentar (n+m) d
+P(d): ∀n, m :: Int positivos y d :: Doc, indentar n (indentar m d) = indentar (n+m) d
 	
 	indentar n (indentar m (Texto s d)) = indentar (n+m) (Texto s d) 
 	indentar n (Texto s (indentar m d)) = indentar (n+m) (Texto s d)    {LEMA2}
@@ -68,12 +68,12 @@ P(d): indentar n (indentar m d) = indentar (n+m) d
 
 Caso x = Linea i d 
 Asumo por {HI} que vale P(d), quiero probar que P(Linea i d) vale
-P(d) = indentar n (indentar m d) = indentar (n+m) d
+P(d): ∀n, m :: Int positivos y d :: Doc, indentar n (indentar m d) = indentar (n+m) d
       
 	indentar n (indentar m (Linea i d)) = indentar (n+m) (Linea i d)      
 	indentar n (Linea (m+i) (indentar m d)) = indentar (n+m) (Linea i d)          {LEMA3}
         Linea (n+(m+i)) (indentar n (indentar m d)) = indentar (n+m) (Linea i d)      {LEMA3}
-	Linea (n+m+i) (indentar (n+m) d) = indentar (n+m) (Linea i d)                 {HI}
+	Linea (n+(m+i)) (indentar (n+m) d) = indentar (n+m) (Linea i d)               {HI}
 	Linea ((n+m)+i) (indentar (n+m) d) = indentar (n+m) (Linea i d)               {INT}
 	indentar (n+m) (Linea i d) = indentar (n+m) (Linea i d)                       {LEMA3}
 
