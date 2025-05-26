@@ -51,6 +51,7 @@ testsEj4 =
   test
     [ mostrar vacio ~?= "",
       mostrar linea ~?= "\n",
+      mostrar (texto "jaja") ~?= "jaja", 
       mostrar (indentar 2 (texto "a" <+> linea <+> texto "b")) ~?= "a\n  b",
       mostrar (vacio <+> texto "a") ~?= "a",
       mostrar (indentar 2 (linea <+> indentar 2 (linea <+> texto "a"))) ~?= "\n  \n    a"
@@ -59,8 +60,8 @@ testsEj4 =
 testsEj5 :: Test
 testsEj5 =
   test
-    [ pponAtomico TextoPP ~?= True,
-      pponAtomico IntPP ~?= True,
+    [ pponAtomico (TextoPP "juan") ~?= True,
+      pponAtomico (IntPP 21) ~?= True,
       pponAtomico merlina ~?= False
     ]
 
@@ -90,18 +91,18 @@ c = texto "c"
 testsEj7 :: Test
 testsEj7 =
   test
-    [ mostrar (intercalar (texto ", ") []) ~?= "",
-      mostrar (intercalar (texto ", ") [a, b, c]) ~?= "a, b, c",
-      mostrar (entreLlaves []) ~?= "{ }",
-      mostrar (entreLlaves [a, b, c]) ~?= "{\n  a,\n  b,\n  c\n}",
-      mostrar (intercalar (texto ", ") [a]) ~?= "a",
-      mostrar (intercalar (texto " + ") [a, b]) ~?= "a + b"
+    [ mostrar (intercalar (texto ", ") [vacio]) ~?= "",
+      mostrar (intercalar (texto ", ") [texto "a", texto "b", texto "c"]) ~?= "a, b, c",
+      mostrar (entreLlaves [vacio]) ~?= "{\n  \n}",
+      mostrar (entreLlaves [texto "a", texto "b", texto "c"]) ~?= "{\n  a,\n  b,\n  c\n}",
+      mostrar (intercalar (texto ", ") [texto "a"]) ~?= "a",
+      mostrar (intercalar (texto " + ") [texto "a", texto "b"]) ~?= "a + b"
     ]
 
 testsEj8 :: Test
 testsEj8 =
   test
-    [ mostrar (aplanar (a <+> linea <+> b <+> linea <+> c)) ~?= "a b c",
+    [ mostrar (aplanar (texto "a" <+> linea <+> texto "b" <+> linea <+> texto "c")) ~?= "a b c",
       mostrar (aplanar (texto "x")) ~?= "x",
       mostrar (aplanar vacio) ~?= "",
       mostrar (aplanar (linea <+> texto "a")) ~?= " a",
