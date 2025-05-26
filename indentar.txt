@@ -1,74 +1,83 @@
-* ∀ k :: Int positivo. indentar k Vacio = Vacio
+Durante el desarrollo de las demostraciones, escribimos los cuantificadores en la primer linea, luego por simplicidad asumimos que están ahí, sin escribirlos.
 
-indentar k Vacio = (indentar)
-foldDoc (Vacio) (\s acc -> Texto s acc) (\i2 acc -> Linea (i+i2) acc) = (foldDoc)
-Vacio
+Definiciones:
+foldDoc :: b -> (String -> b -> b) -> (Int -> b -> b)-> Doc -> b
+foldDoc fVacio fTexto fLinea doc = case doc of
+  Vacio -> fVacio		             {FD0}
+  Texto s d -> fTexto s (rec d) 	     {FD1}
+  Linea i d -> fLinea i (rec d)              {FD2}
+  where rec = foldDoc fVacio fTexto fLinea 
 
-
-* ∀ k :: Int positivo. indentar k (Texto s d) = Texto s (indentar k d)
-
-indentar k (Texto s d) = (indentar)
-foldDoc (Vacio) (\s' acc -> Texto s' acc) (\i2 acc -> Linea (k+i2) acc) (Texto s d) = (foldDoc)
-(\s' acc -> Texto s' acc) s (foldDoc (Vacio) (\s' acc -> Texto s' acc) (\i2 acc -> Linea (k+i2) acc)) d = (sintaxis)
-(\s' -> (\acc -> Texto s' acc)) s (foldDoc (Vacio) (\s' acc -> Texto s' acc) (\i2 acc -> Linea (k+i2) acc)) d = (beta)
-
-	// (foldDoc (Vacio) (\s' acc -> Texto s' acc) (\i2 acc -> Linea (k+i2) acc)) d == indentar k d
-
-(\acc -> Texto s acc) (indentar k d) = (beta)
-Texto s (indentar k d)
+	
+indentar :: Int -> Doc -> Doc
+indentar i = foldDoc Vacio Texto (\i2 acc -> Linea (i+i2) acc)  {IND}
 
 
-* ∀ m, k :: Int positivos. ∀ d :: Doc. indentar m (Linea k d) = Linea (m+k) (indentar m d)
+Demostración de los lemas:
 
-indentar m (Linea k d) = (indentar)
-foldDoc (Vacio) (\s acc -> Texto s acc) (\i2 acc -> Linea (m+i2) acc) (Linea k d) = (foldDoc)
-(\i2 acc -> Linea (m+i2) acc) k (foldDoc (Vacio) (\s acc -> Texto s acc) (\i2 acc -> Linea (m+i2) acc)) d = (sintaxis)
-(\i2 -> (\acc -> Linea (m+i2) acc)) k (foldDoc (Vacio) (\s acc -> Texto s acc) (\i2 acc -> Linea (m+i2) acc)) d = (beta)
+{LEMA1} LEMA 1: ∀k :: Int. indentar k Vacio = Vacio, k positivo 
 
-	// (foldDoc (Vacio) (\s acc -> Texto s acc) (\i2 acc -> Linea (m+i2) acc)) d == indentar m d
+	indentar k Vacio = Vacio
+	foldDoc Vacio Texto (\i2 acc -> Linea (k+i2) acc) Vacio = Vacio  {IND}
+	Vacio = Vacio  {FD0}
 
-(\acc -> Linea (m+k) acc) (indentar m d) = (beta)
-Linea (m+k) (indentar m d)
+		                   
+{LEMA2} LEMA 2: ∀k :: Int, ∀s :: String, ∀d :: Doc. indentar k (Texto s d) = Texto s (indentar k d) 
 
+	indentar k (Texto s d) = Texto s (indentar k d)
+	foldDoc Vacio Texto (\i2 acc -> Linea (k+i2) acc) (Texto s d) = Texto s (indentar k d)  {IND}
+	Texto s (foldDoc Vacio Texto (\i2 acc -> Linea (k+i2) acc) d) = Texto s (indentar k d)  {FD1}
+	Texto s (indentar k d) = Texto s (indentar k d)                                         {IND}                                                                                                                            
+   
 
+{LEMA3} LEMA 3: ∀m, k :: Int positivos y d :: Doc. indentar m (Linea k d) = Linea (m+k) (indentar m d), k y m positivos 
 
-* ∀ n, m :: Int positivos. x :: Doc. indentar n (indentar m x) = indentar (n+m) x
-
-P(l) : indentar n (indentar m l) = indentar (n+m) l
-
-CASO BASE: l = Vacio
-
-P(Vacio) : indentar n (indentar m Vacio) = indentar (n+m) Vacio
-
-indentar n (indentar m Vacio) = (lema)
-indentar n Vacio = (lema)
-Vacio
-
-indentar (n+m) Vacio = (lema)
-Vacio
+	indentar m (Linea k d) = Linea (m+k) (indentar m d)
+	foldDoc Vacio Texto (\i2 acc -> Linea (m+i2) acc) (Linea k d) = Linea (m+k) (indentar m d)                          {IND}
+	(\i2 acc -> Linea (m+i2) acc) k (foldDoc Vacio Texto (\i2 acc -> Linea (m+i2) acc) d) = Linea (m+k) (indentar m d)  {FD2}
+	Linea (m+k) (foldDoc Vacio Texto (\i2 acc -> Linea (m+i2) acc) d) = Linea (m+k) (indentar m d)                       {β}
+	Linea (m+k) (indentar m d) = Linea (m+k) (indentar m d)                                                             {IND}
 
 
-CASO INDUCTIVO 1:
-
-P(d) => P(Texto s d)
-
-HI: indentar n (indentar m d) = indentar (n+m) d
-
-indentar n (indentar m (Texto s d)) = (lema)
-indentar n (Texto s (indentar m d)) = (lema)
-Texto s (indentar n (indentar m d)) = (HI)
-Texto s (indentar (n+m) d) = (lema)
-indentar (n+m) (Texto s d)
 
 
-CASO INDUCTIVO 2:
+EJERCICIO: ∀n, m :: Int positivos y x :: Doc, indentar n (indentar m x) = indentar (n+m) x, n y m positivos
+Por extensionalidad de Doc, vamos los casos para las posibles formas de x.
 
-P(d) => P(Linea k d)
+Caso x = Vacio
+	indentar n (indentar m Vacio) = indentar (n+m) Vacio
+	indentar n Vacio = indentar (n+m) Vacio              {LEMA1}
+	Vacio = indentar (n+m) Vacio                         {LEMA1}
+	Vacio = Vacio                                        {LEMA1}
 
-HI: indentar n (indentar m d) = indentar (n+m) d
+-> Se cumple P(Vacio)
 
-indentar n (indentar m (Linea k d)) = (lema)
-indentar n (Linea (m+k) (indentar m d)) = (lema)
-Linea (n + (m+k)) (indentar n (indentar m d)) = (HI)
-Linea (n + (m+k)) (indentar (n+m) d) = (lema)
-indentar (n+m) (Linea k d)
+
+Caso x = Texto s d
+Asumo por {HI} que vale P(d), quiero probar que P(Texto s d) vale
+P(d): indentar n (indentar m d) = indentar (n+m) d
+	
+	indentar n (indentar m (Texto s d)) = indentar (n+m) (Texto s d) 
+	indentar n (Texto s (indentar m d)) = indentar (n+m) (Texto s d)    {LEMA2}
+	Texto s (indentar n (indentar m d)) = indentar (n+m) (Texto s d)    {LEMA2}
+	Texto s (indentar (n+m) d) = indentar (n+m) (Texto s d)             {HI}
+	indentar (n+m) (Texto s d) = indentar (n+m) (Texto s d)             {LEMA2}
+
+-> Se cumple que P(d) => P(Texto s d)	
+
+
+Caso x = Linea i d 
+Asumo por {HI} que vale P(d), quiero probar que P(Linea i d) vale
+P(d) = indentar n (indentar m d) = indentar (n+m) d
+      
+	indentar n (indentar m (Linea i d)) = indentar (n+m) (Linea i d)      
+	indentar n (Linea (m+i) (indentar m d)) = indentar (n+m) (Linea i d)          {LEMA3}
+        Linea (n+(m+i)) (indentar n (indentar m d)) = indentar (n+m) (Linea i d)      {LEMA3}
+	Linea (n+m+i) (indentar (n+m) d) = indentar (n+m) (Linea i d)                 {HI}
+	Linea ((n+m)+i) (indentar (n+m) d) = indentar (n+m) (Linea i d)               {INT}
+	indentar (n+m) (Linea i d) = indentar (n+m) (Linea i d)                       {LEMA3}
+
+
+-> Se cumple que P(d) => P(Linea i d)
+
+
