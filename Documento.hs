@@ -45,7 +45,7 @@ caso d1 = Texto s d
     otherwise -> Texto s acc) Linea (Texto s d)
 
 En este punto, lo que queda es un "Texto s" y como documento asociado el resultado de aplicar recursivamente el fold a, en este
-caso d. Ahi podemos separar el flujo en dos casos, si el resultado del fold es otro Texto, concatena su string con el anterior, 
+caso, d. Ahi podemos separar el flujo en dos casos, si el resultado del fold es otro Texto, concatena su string con el anterior, 
 sino, simplemente junta el Texto anterior con el nuevo documento. Detallo porque se cumple cada invariante de Texto:
   
   -"s no debe ser el string vacio y s no debe contener saltos de linea": Esto es asi ya que, en el caso de que el resultado del fold 
@@ -80,17 +80,14 @@ porque se cumple el invariante:
     invariante, al devolver otra Linea sin alterar el valor de i, si el original cumple con el invariante, luego de la funcion 
     tambien se va a cumplir.
 -}
-foldDoc :: b -> (String -> b -> b) -> (Int -> b -> b)-> Doc -> b
-foldDoc fVacio fTexto fLinea doc = case doc of
-  Vacio -> fVacio
-  Texto s d -> fTexto s (rec d)
-  Linea i d -> fLinea i (rec d)
-  where rec = foldDoc fVacio fTexto fLinea 
 
 (<+>) :: Doc -> Doc -> Doc
-d1 <+> d2 = foldDoc d2 (\s acc -> case acc of 
-  Texto s2 acc2 -> Texto (s++s2) acc2 
-  otherwise -> Texto s acc) Linea d1
+d1 <+> d2 = foldDoc d2 fTexto Linea d1
+  where
+    fTexto s rec = case rec of
+      Texto s2 rec2 -> Texto (s++s2) rec2
+      otherwise -> Texto s rec
+
 
 
 {-INVARIANTE
@@ -113,12 +110,13 @@ En este caso, desde este punto, se va a devolver un Texto con su string original
 aplicarle el fold al documento asociado original del Texto. Desarrollamos el porque cumple con los invariantes.
   
   -"s no debe ser el string vacio y s no debe contener saltos de linea": Se debe a que, partiendo de la base de que "Texto s d" 
-  cumple con los invariantes, luego la funcion no realiza ninguna modificacion sobre el "s" del Texto, por ende, si los cumple
+  cumple con los invariantes, luego la funcion no devuelve ningun Texto con su string modificado en base al original, por ende, si los cumple
   antes de aplicarle la funcion, lo cumple despues.
   
   -"d debe ser Vacio o Linea i d’": Por lo mismo de antes, asumiendo que "Texto s d" cumple con este invariante, la funcion no crea
-  y agrega un nuevo Texto al documento final, recorre el documento dado como parametro, haciendo modificaciones particulares cuando
-  encuentra una Linea. Entonces, si el "Texto s d" original cumple con este invariante, luego de aplicarle la funcion va a hacerlo.
+  y agrega un nuevo Texto al documento final, recorre el documento dado como parametro, devolviendo una Linea con haciendo modificaciones 
+  particulares en la cantidad de espacios cuando encuentra una. Entonces, si el "Texto s d" original cumple con este invariante, luego de 
+  aplicarle la funcion va a hacerlo.
 
 
 caso d = Linea j d
@@ -145,13 +143,12 @@ invariantes:
 -}
 
 indentar :: Int -> Doc -> Doc
-indentar i = foldDoc Vacio Texto (\i2 acc -> Linea (i+i2) acc)
+indentar i = foldDoc Vacio Texto (\i2 rec -> Linea (i+i2) rec)
 
 
 mostrar :: Doc -> String
-mostrar = foldDoc "" (++) (\i acc -> "\n" ++ replicate i ' ' ++ acc)
+mostrar = foldDoc "" (++) (\i rec -> "\n" ++ replicate i ' ' ++ rec)
 
 
 imprimir :: Doc -> IO ()
 imprimir d = putStrLn (mostrar d)
-
