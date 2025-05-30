@@ -28,7 +28,7 @@ entreLlaves ds = texto "{" <+> indentar 2 (linea <+> intercalar (texto "," <+> l
 
 
 aplanar :: Doc -> Doc
-aplanar = foldDoc vacio (\s acc -> texto s <+> acc) (\_ acc -> texto " " <+> acc)
+aplanar = foldDoc vacio (\s rec -> texto s <+> rec) (\_ rec -> texto " " <+> rec)
 
 
 --esquema de recursion estructural
