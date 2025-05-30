@@ -19,7 +19,7 @@ pponObjetoSimple _ = False
 
 
 intercalar :: Doc -> [Doc] -> Doc
-intercalar d = foldr1 (\d1 acc -> d1 <+> d <+> acc)
+intercalar d = foldr1 (\d1 rec -> d1 <+> d <+> rec)
 
 
 entreLlaves :: [Doc] -> Doc
