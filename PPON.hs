@@ -15,7 +15,6 @@ pponAtomico p = case p of
 
 pponObjetoSimple :: PPON -> Bool
 pponObjetoSimple (ObjetoPP x) = all (pponAtomico . snd) x
-pponObjetoSimple _ = False
 
 
 intercalar :: Doc -> [Doc] -> Doc
