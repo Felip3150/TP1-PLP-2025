@@ -10,7 +10,7 @@ foldDoc fVacio fTexto fLinea doc = case doc of
 
 	
 indentar :: Int -> Doc -> Doc
-indentar i = foldDoc Vacio Texto (\i2 acc -> Linea (i+i2) acc)  {IND}
+indentar i = foldDoc Vacio Texto (\i2 rec -> Linea (i+i2) rec)  {IND}
 
 
 Demostración de los lemas:
@@ -18,24 +18,24 @@ Demostración de los lemas:
 {LEMA1} LEMA 1: ∀k :: Int. indentar k Vacio = Vacio, k positivo 
 
 	indentar k Vacio = Vacio
-	foldDoc Vacio Texto (\i2 acc -> Linea (k+i2) acc) Vacio = Vacio  {IND}
+	foldDoc Vacio Texto (\i2 rec -> Linea (k+i2) rec) Vacio = Vacio  {IND}
 	Vacio = Vacio  {FD0}
 
 		                   
 {LEMA2} LEMA 2: ∀k :: Int, ∀s :: String, ∀d :: Doc. indentar k (Texto s d) = Texto s (indentar k d) 
 
 	indentar k (Texto s d) = Texto s (indentar k d)
-	foldDoc Vacio Texto (\i2 acc -> Linea (k+i2) acc) (Texto s d) = Texto s (indentar k d)  {IND}
-	Texto s (foldDoc Vacio Texto (\i2 acc -> Linea (k+i2) acc) d) = Texto s (indentar k d)  {FD1}
+	foldDoc Vacio Texto (\i2 rec -> Linea (k+i2) rec) (Texto s d) = Texto s (indentar k d)  {IND}
+	Texto s (foldDoc Vacio Texto (\i2 rec -> Linea (k+i2) rec) d) = Texto s (indentar k d)  {FD1}
 	Texto s (indentar k d) = Texto s (indentar k d)                                         {IND}                                                                                                                            
    
 
 {LEMA3} LEMA 3: ∀m, k :: Int positivos y d :: Doc. indentar m (Linea k d) = Linea (m+k) (indentar m d), k y m positivos 
 
 	indentar m (Linea k d) = Linea (m+k) (indentar m d)
-	foldDoc Vacio Texto (\i2 acc -> Linea (m+i2) acc) (Linea k d) = Linea (m+k) (indentar m d)                          {IND}
-	(\i2 acc -> Linea (m+i2) acc) k (foldDoc Vacio Texto (\i2 acc -> Linea (m+i2) acc) d) = Linea (m+k) (indentar m d)  {FD2}
-	Linea (m+k) (foldDoc Vacio Texto (\i2 acc -> Linea (m+i2) acc) d) = Linea (m+k) (indentar m d)                       {β}
+	foldDoc Vacio Texto (\i2 rec -> Linea (m+i2) rec) (Linea k d) = Linea (m+k) (indentar m d)                          {IND}
+	(\i2 rec -> Linea (m+i2) rec) k (foldDoc Vacio Texto (\i2 rec -> Linea (m+i2) rec) d) = Linea (m+k) (indentar m d)  {FD2}
+	Linea (m+k) (foldDoc Vacio Texto (\i2 rec -> Linea (m+i2) rec) d) = Linea (m+k) (indentar m d)                       {β}
 	Linea (m+k) (indentar m d) = Linea (m+k) (indentar m d)                                                             {IND}
 
 
