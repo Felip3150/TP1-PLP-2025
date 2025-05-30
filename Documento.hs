@@ -83,10 +83,9 @@ porque se cumple el invariante:
 
 (<+>) :: Doc -> Doc -> Doc
 d1 <+> d2 = foldDoc d2 fTexto Linea d1
-  where
-    fTexto s rec = case rec of
-      Texto s2 rec2 -> Texto (s++s2) rec2
-      otherwise -> Texto s rec
+  where fTexto s rec = case rec of
+        Texto s2 rec2 -> Texto (s++s2) rec2
+        otherwise -> Texto s rec
 
 
 
