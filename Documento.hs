@@ -32,17 +32,17 @@ Hacemos induccion sobre d1, entonces por extencionalidad de Doc, vemos los casos
 
 Caso d1 = Vacio
   Vacio <+> d2
-  foldDoc d2 (\s acc -> case acc of 
-    Texto s2 acc2 -> Texto (s++s2) acc2 
-    otherwise -> Texto s acc) Linea Vacio
+  foldDoc d2 (\s rec -> case rec of 
+    Texto s2 rec2 -> Texto (s++s2) rec2 
+    otherwise -> Texto s rec) Linea Vacio
   d2
 El resultado es d2, y como estoy asumiendo que los invariantes se cumplen tanto para d1 como d2, para este caso tambien se cumple.
 
 caso d1 = Texto s d
   Texto s d <+> d2
-  foldDoc d2 (\s acc -> case acc of 
-    Texto s2 acc2 -> Texto (s++s2) acc2 
-    otherwise -> Texto s acc) Linea (Texto s d)
+  foldDoc d2 (\s rec -> case rec of 
+    Texto s2 rec2 -> Texto (s++s2) rec2 
+    otherwise -> Texto s rec) Linea (Texto s d)
 
 En este punto, lo que queda es un "Texto s" y como documento asociado el resultado de aplicar recursivamente el fold a, en este
 caso, d. Ahi podemos separar el flujo en dos casos, si el resultado del fold es otro Texto, concatena su string con el anterior, 
@@ -60,7 +60,7 @@ sino, simplemente junta el Texto anterior con el nuevo documento. Detallo porque
     asociado otro texto, ya que la funcion se encarga de unirlos concatenando sus strings, dejando como opciones unicamente una
     Linea con alguna "i" y algun "d", o directamente un Vacio.
 
-  Luego, respecto a acc, como sabemos por la definicion de foldDoc que es el resultado de aplicar el propio foldDoc a d, el documento
+  Luego, respecto a rec, como sabemos por la definicion de foldDoc que es el resultado de aplicar el propio foldDoc a d, el documento
   asociado en este caso al Texto. Desde el principio asumimos que cumple con los invariantes, y mientras se aplica el fold se encuentra
   con los mismos casos que ya detallamos que hacen que aun se cumplan los invariantes. Recursivamente va a recorrer el documento d hasta
   llegar a la "base", ahi deberia encontrar un vacio, que luego de aplicar la funcion sigue cumpliendo el invariante. Luego arrastra 
@@ -69,9 +69,9 @@ sino, simplemente junta el Texto anterior con el nuevo documento. Detallo porque
 
 caso d1 = Linea i d 
   Linea i d <+> d2
-  foldDoc d2 (\s acc -> case acc of 
-    Texto s2 acc2 -> Texto (s++s2) acc2 
-    otherwise -> Texto s acc) Linea (Linea s d)
+  foldDoc d2 (\s rec -> case rec of 
+    Texto s2 rec2 -> Texto (s++s2) rec2 
+    otherwise -> Texto s rec) Linea (Linea s d)
 
 En este punto, lo que se va a devolver es una "Linea i d'" siendo d' el resultado de aplicarle recursivamente el fold a d, Detallo
 porque se cumple el invariante:
@@ -96,15 +96,15 @@ para todo i :: int, para todo d :: Doc. indentar i d cumple con los invariantes
 
 caso d = Vacio
   indentar i Vacio
-  foldDoc Vacio Texto (\i2 acc -> Linea (i+i2) acc) Vacio
+  foldDoc Vacio Texto (\i2 rec -> Linea (i+i2) rec) Vacio
   Vacio
 
 Este caso, como lo devuelto es Vacio, y no hay ningun invariente en particular que involucre a Vacio, decimos que esta probado.
 
 caso d = Texto s d
   indentar i (Texto s d)
-  foldDoc Vacio Texto (\i2 acc -> Linea (i+i2) acc) (Texto s d)
-  Texto s (foldDoc Vacio Texto (\i2 acc -> Linea (i+i2) acc) d)
+  foldDoc Vacio Texto (\i2 rec -> Linea (i+i2) rec) (Texto s d)
+  Texto s (foldDoc Vacio Texto (\i2 rec -> Linea (i+i2) rec) d)
 
 En este caso, desde este punto, se va a devolver un Texto con su string original y un documento asociado que es el resultado de 
 aplicarle el fold al documento asociado original del Texto. Desarrollamos el porque cumple con los invariantes.
@@ -121,9 +121,9 @@ aplicarle el fold al documento asociado original del Texto. Desarrollamos el por
 
 caso d = Linea j d
   indentar i (Linea j d)
-  foldDoc Vacio Texto (\i2 acc -> Linea (i+i2) acc) (Linea j d)
-  (\i2 acc -> Linea (i+i2) acc) j ((\i2 acc -> Linea (i+i2) acc) d)
-  Linea (i+j) ((\i2 acc -> Linea (i+i2) acc) d)
+  foldDoc Vacio Texto (\i2 rec -> Linea (i+i2) rec) (Linea j d)
+  (\i2 rec -> Linea (i+i2) rec) j ((\i2 rec -> Linea (i+i2) rec) d)
+  Linea (i+j) ((\i2 rec -> Linea (i+i2) rec) d)
 
 En este punto, lo que va a devolver es una Linea con el valor de cantidad de espacios igual a la suma del valor que tenia la Linea
 original que se encontro el fold, mas el valor que se paso como parametro en la funcion indentar. Detallamos porque se cumplen los 
@@ -134,7 +134,7 @@ invariantes:
   el valor dado como parametro en la funcion indentar (que por consigna es mayor que 0), y el que tenia la Linea que se encontro
   el fold, que estamos asumiendo que cumple el invariante, por lo que es mayor o igual a 0. Luego la suma de dos naturales, natural-
   mente es mayor que 0, por lo que se cumple el invariante. 
-  Luego, respecto a acc, como sabemos por la definicion de foldDoc que es el resultado de aplicar el propio foldDoc a d, el documento
+  Luego, respecto a rec, como sabemos por la definicion de foldDoc que es el resultado de aplicar el propio foldDoc a d, el documento
   asociado en este caso a la Linea. Desde el principio asumimos que cumple con los invariantes, y mientras se aplica el fold se encuentra
   con los mismos casos que ya detallamos que hacen que aun se cumplan los invariantes. Recursivamente va a recorrer el documento d hasta
   llegar a la "base", ahi deberia encontrar un vacio, que luego de aplicar la funcion sigue cumpliendo el invariante. Luego arrastra 
